@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Página de presentación de productos de Nativa" />
     <title>Nativa | Productos innovadores</title>
+    <link rel="icon" type="image/jpeg"
+        href="logo.jpeg" />
     <style>
         :root {
             --primary: #1f7a5f;
@@ -85,6 +87,13 @@
         .nav-links button.active {
             background: var(--primary);
             color: white;
+        }
+
+        .nav-links button:focus-visible,
+        .menu-toggle:focus-visible,
+        .product-card:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .menu-toggle {
@@ -167,7 +176,172 @@
         }
 
         .product-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        /* ---- Flip card ---- */
+        .product-card {
+            perspective: 1200px;
+            background: none;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .product-card-inner {
+            width: 100%;
+            min-height: 360px;
+            border-radius: 18px;
+            position: relative;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(.2, .8, .2, 1);
+            will-change: transform;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            /* NOTA: overflow:hidden se quitó de aquí a propósito.
+               overflow distinto de "visible" fuerza a que transform-style
+               se comporte como "flat", rompiendo el efecto 3D y el
+               backface-visibility de las caras hijas. */
+        }
+
+        /* Solo gira por click/tap (clase is-flipped vía JS).
+           Se quitó el disparador :hover para evitar comportamiento
+           inconsistente en pantallas táctiles. */
+        .product-card.is-flipped .product-card-inner {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+        }
+
+        /* Hover como mejora opcional solo en dispositivos con puntero fino (mouse) */
+        @media (hover: hover) and (pointer: fine) {
+            .product-card:hover .product-card-inner {
+                transform: rotateY(180deg);
+                -webkit-transform: rotateY(180deg);
+            }
+        }
+
+        .product-card-face {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 18px;
+            overflow: hidden;
+            padding: 1rem;
+            gap: 0.8rem;
+        }
+
+        .product-card-face-front {
+            background: #ffffff;
+        }
+
+        .product-card-face-back {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            background-color: var(--back-color, #ffffff);
+            color: var(--back-fore, #444444);
+        }
+
+        .product-card-face-back .product-title,
+        .product-card-face-back .producer,
+        .product-card-face-back .product-desc,
+        .product-card-face-back .product-info {
+            color: var(--back-fore, #444444);
+        }
+
+        .product-info {
+            list-style: none;
+            padding: 0;
+            margin: 0.6rem 0 0 0;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .product-card--camu-camu {
+            --back-color: #821c11;
+            --back-fore: #ffffff;
+        }
+
+        .product-card--aguaymanto {
+            --back-color: #e88d0b;
+            --back-fore: #ffffff;
+        }
+
+        .product-card--proximamente {
+            --back-color: #2f5f48;
+            --back-fore: #ffffff;
+        }
+
+        .product-card-face-back--proximamente {
+            justify-content: center;
+            text-align: center;
+            align-items: center;
+        }
+
+        /* Imagen atenuada al 10% de opacidad para el card "Próximamente" */
+        .image-container--faded {
+            position: relative;
+        }
+
+        .image-container--faded img {
+            opacity: 0.1;
+        }
+
+        .coming-soon-badge {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .coming-soon-badge span {
+            background: var(--secondary);
+            color: white;
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            letter-spacing: 0.02em;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .product-meta {
+            padding: 0.6rem 0.2rem 0.8rem 0.2rem;
+        }
+
+        .product-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        .producer {
+            font-size: 0.95rem;
+            color: #2f5f48;
+            font-weight: 700;
+        }
+
+        .product-desc {
+            color: #444;
+            font-size: 0.95rem;
+            margin-top: 0.6rem;
         }
 
         h2 {
@@ -183,6 +357,189 @@
         .product-card ul {
             padding-left: 1rem;
             margin-top: 0.5rem;
+        }
+
+        .flip-hint {
+            display: block;
+            text-align: center;
+            font-size: 0.78rem;
+            color: #888;
+            margin-top: 0.4rem;
+        }
+
+        /* ---- Pedidos ---- */
+        .pedidos-block {
+            background: var(--light);
+            border: 1px solid #e5ece7;
+            border-radius: 18px;
+            padding: 1.4rem 1.5rem 1.6rem;
+            margin-top: 1.4rem;
+        }
+
+        .pedidos-eyebrow {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--primary);
+            background: rgba(31, 122, 95, 0.1);
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            margin-bottom: 0.7rem;
+        }
+
+        .pedidos-subtitle {
+            margin-bottom: 0.6rem;
+            color: var(--secondary);
+        }
+
+        .pedidos-note {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .store-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .store-card {
+            background: white;
+            border: 1px solid #eef1ee;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+            display: grid;
+            place-items: center;
+            padding: 1.6rem 1rem;
+            min-height: 96px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .store-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09);
+        }
+
+        .store-logo {
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: 0.01em;
+        }
+
+        .store-logo--rappi {
+            color: #ff441f;
+            font-style: italic;
+        }
+
+        .store-logo--listo {
+            color: #ef8d1a;
+        }
+
+        .store-logo--wong,
+        .store-logo--cencosud {
+            color: #d81f2a;
+        }
+
+        .store-logo--plazavea {
+            color: #e0245e;
+        }
+
+        .store-logo--tottus {
+            color: #2f9e44;
+        }
+
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            max-width: 640px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-row.two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            font: inherit;
+            padding: 0.7rem 0.9rem;
+            border-radius: 12px;
+            border: 1px solid #d8ddd9;
+            background: white;
+            color: var(--dark);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-row input:hover,
+        .form-row select:hover,
+        .form-row textarea:hover {
+            border-color: #b9c6bd;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 122, 95, 0.15);
+        }
+
+        .form-row input:invalid:not(:placeholder-shown) {
+            border-color: #d8474c;
+        }
+
+        .order-submit {
+            border: none;
+            cursor: pointer;
+            align-self: flex-start;
+            margin-top: 0.2rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .order-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(31, 122, 95, 0.3);
+        }
+
+        .order-alert {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 1.1rem;
+            max-width: 640px;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            background: #eaf7f1;
+            border: 1px solid #bfe3d1;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.92rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Refuerza que el atributo [hidden] gane sobre display:flex de arriba */
+        .order-alert[hidden] {
+            display: none;
+        }
+
+        .order-alert-icon {
+            flex-shrink: 0;
         }
 
         footer {
@@ -246,9 +603,49 @@
                 grid-template-columns: 1fr;
             }
 
+            .hero-card {
+                padding: 1.2rem;
+            }
+
+            .hero-card img {
+                max-width: 100%;
+            }
+
             .content {
                 width: min(100%, 94%);
                 margin-top: 1rem;
+            }
+
+            .product-card-inner {
+                min-height: 340px;
+            }
+
+            .store-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .form-row.two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .pedidos-block {
+                padding: 1.1rem 1rem 1.3rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .store-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .brand span {
+                font-size: 0.95rem;
+            }
+
+            .product-card-inner {
+                min-height: 380px;
             }
         }
     </style>
@@ -257,14 +654,21 @@
 <body>
     <header class="topbar">
         <div class="brand">
-            <div class="brand-mark">N</div>
-            <span>Nativa</span>
+            <div class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32 12c9 6 14 14 14 22 0 7.7-6.3 14-14 14S18 41.7 18 34c0-8 5-16 14-22z"
+                        fill="#ffffff" />
+                    <path d="M32 20v24" stroke="#1f7a5f" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+            </div>
+            <span>Bebidas Naturales Nativa SAC</span>
         </div>
-        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="nav-links" id="navLinks" aria-label="Menú principal">
             <button class="active" data-view="inicio">Inicio</button>
             <button data-view="nosotros">Nosotros</button>
             <button data-view="productos">Productos</button>
+            <button data-view="pedidos">Pedidos</button>
         </nav>
     </header>
 
@@ -272,29 +676,32 @@
         <section class="view active" id="view-inicio">
             <div class="hero-card">
                 <div>
-                    <h1>Descubre un producto pensado para destacar.</h1>
-                    <p>Nativa presenta una propuesta moderna, funcional y con estilo, ideal para quienes buscan calidad
-                        y diseño en un solo lugar.</p>
+                    <h1>Descubre un producto pensado en tu salud.</h1>
+                    <p>Buscamos promover el consumo de bebidas saludables en diversos contextos, contribuyendo a la
+                        revalorización de frutas oriundas del Perú.</p>
                     <a href="#" class="btn" data-view-trigger="productos">Ver productos</a>
                 </div>
-                <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"
-                    alt="Producto Nativa" />
+                <img src="1.png" alt="Producto Nativa" />
             </div>
         </section>
 
         <section class="view" id="view-nosotros">
             <div class="info-card">
                 <h2>Nosotros</h2>
-                <p>Somos una marca que combina innovación, sostenibilidad y diseño para crear experiencias auténticas y
-                    memorables.</p>
+                <p>Bebidas Naturales Nativa SAC es una marca que combina innovación, sostenibilidad y diseño para
+                    crear experiencias auténticas y memorables.</p>
                 <div class="grid about-grid" style="margin-top: 1rem;">
                     <div class="info-card">
                         <h3>Visión</h3>
-                        <p>Crear productos que aporten valor real y mejoren la vida cotidiana.</p>
+                        <p>Brindar bebidas naturales elaboradas con frutas peruanas, sin azúcares añadidos ni
+                            conservantes, promoviendo un estilo de vida saludable mediante productos de alta calidad,
+                            sostenibles y accesibles para nuestros consumidores.</p>
                     </div>
                     <div class="info-card">
                         <h3>Compromiso</h3>
-                        <p>Trabajamos con calidad, responsabilidad y un enfoque claro hacia el futuro.</p>
+                        <p>Nuestro compromiso es brindar productos saludables, naturales y seguros, elaborados con
+                            responsabilidad ambiental y orientados a mejorar la calidad de vida de nuestros
+                            consumidores.</p>
                     </div>
                 </div>
             </div>
@@ -303,28 +710,201 @@
         <section class="view" id="view-productos">
             <div class="info-card">
                 <h2>Productos</h2>
-                <p>Aquí podrás presentar tus productos cuando compartas los detalles. Por ahora, esta vista está lista
-                    para recibir la información final.</p>
+                <p>Toca o pasa el cursor sobre una tarjeta para ver los detalles del producto.</p>
                 <div class="grid product-grid" style="margin-top: 1rem;">
-                    <article class="product-card">
-                        <h3>Producto 1</h3>
-                        <p>Detalle principal del producto.</p>
+                    <article class="product-card product-card--camu-camu">
+                        <div class="product-card-inner" role="button" tabindex="0" aria-pressed="false"
+                            aria-label="Ver detalles de Camu Camu">
+                            <div class="product-card-face product-card-face-front">
+                                <div class="image-container">
+                                    <img src="2.png" alt="Camu Camu">
+                                </div>
+                                <div class="product-meta">
+                                    <div class="product-title">Camu Camu</div>
+                                    <div class="producer">Productor: Ranchos del Norte</div>
+                                </div>
+                            </div>
+                            <div class="product-card-face product-card-face-back">
+                                <div>
+                                    <div class="product-title">Camu Camu</div>
+                                    <p class="product-desc">Fruta amazónica rica en vitamina C. Cultivo orgánico por
+                                        pequeños productores locales.</p>
+                                    <ul class="product-info">
+                                        <li>Fruta usada: Camu Camu</li>
+                                        <li>Ingredientes: Pulpa 100% natural</li>
+                                        <li>Volumen: 250 ml</li>
+                                    </ul>
+                                </div>
+                                <div class="product-meta">
+                                    <div class="producer">Región: Amazonas, Perú</div>
+                                    <div style="margin-top:0.4rem;font-size:0.9rem;">Sin azúcares añadidos · Sin
+                                        preservantes</div>
+                                </div>
+                            </div>
+                        </div>
                     </article>
-                    <article class="product-card">
-                        <h3>Producto 2</h3>
-                        <p>Detalle principal del producto.</p>
+
+                    <article class="product-card product-card--aguaymanto">
+                        <div class="product-card-inner" role="button" tabindex="0" aria-pressed="false"
+                            aria-label="Ver detalles de Aguaymanto">
+                            <div class="product-card-face product-card-face-front">
+                                <div class="image-container">
+                                    <img src="3.png" alt="Aguaymanto">
+                                </div>
+                                <div class="product-meta">
+                                    <div class="product-title">Aguaymanto</div>
+                                    <div class="producer">Productor: Cooperativa Sol</div>
+                                </div>
+                            </div>
+                            <div class="product-card-face product-card-face-back">
+                                <div>
+                                    <div class="product-title">Aguaymanto</div>
+                                    <p class="product-desc">Sabor cítrico y fresco, cultivado en microparcelas
+                                        familiares. Proceso artesanal y sostenible.</p>
+                                    <ul class="product-info">
+                                        <li>Fruta usada: Aguaymanto (Physalis)</li>
+                                        <li>Ingredientes: Pulpa 100% natural</li>
+                                        <li>Volumen: 250 ml</li>
+                                    </ul>
+                                </div>
+                                <div class="product-meta">
+                                    <div class="producer">Región: Cusco, Perú</div>
+                                    <div style="margin-top:0.4rem;font-size:0.9rem;">Envase biodegradable · Hecho en
+                                        Perú</div>
+                                </div>
+                            </div>
+                        </div>
                     </article>
-                    <article class="product-card">
-                        <h3>Producto 3</h3>
-                        <p>Detalle principal del producto.</p>
+
+                    <article class="product-card product-card--proximamente">
+                        <div class="product-card-inner" role="button" tabindex="0" aria-pressed="false"
+                            aria-label="Nuevo producto próximamente">
+                            <div class="product-card-face product-card-face-front">
+                                <div class="image-container image-container--faded">
+                                    <img src="4.jpg" alt="" role="presentation">
+                                    <div class="coming-soon-badge">
+                                        <span>Próximamente</span>
+                                    </div>
+                                </div>
+                                <div class="product-meta">
+                                    <div class="product-title">Nuevos sabores</div>
+                                    <div class="producer">En preparación</div>
+                                </div>
+                            </div>
+                            <div class="product-card-face product-card-face-back product-card-face-back--proximamente">
+                                <div>
+                                    <div class="product-title">Próximamente</div>
+                                    <p class="product-desc">Estamos preparando un nuevos sabores para
+                                        sumarlo a la familia Nativa. Muy pronto compartimos los detalles.</p>
+                                </div>
+                                <div class="product-meta">
+                                    <div style="margin-top:0.4rem;font-size:0.9rem;">Síguenos para enterarte primero
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </article>
+                </div>
+            </div>
+        </section>
+        <section class="view" id="view-pedidos">
+            <div class="info-card">
+                <h2>Pedidos</h2>
+                <p>Consíguela en tu tienda online favorita, o si tienes una bodega o tienda y quieres vender Nativa,
+                    solicita tu pedido directamente con nosotros.</p>
+
+                <div class="pedidos-block">
+                    <div class="pedidos-eyebrow">Compra online</div>
+                    <h3 class="pedidos-subtitle">Consíguela en tu tienda online favorita</h3>
+                    <div class="grid store-grid">
+                        <div class="store-card">
+                            <span class="store-logo store-logo--rappi">Rappi</span>
+                        </div>
+                        <div class="store-card">
+                            <span class="store-logo store-logo--listo">LiSTO!</span>
+                        </div>
+                        <div class="store-card">
+                            <span class="store-logo store-logo--wong">Wong</span>
+                        </div>
+                        <div class="store-card">
+                            <span class="store-logo store-logo--plazavea">plazaVea</span>
+                        </div>
+                        <div class="store-card">
+                            <span class="store-logo store-logo--tottus">Tottus</span>
+                        </div>
+                        <div class="store-card">
+                            <span class="store-logo store-logo--cencosud">Wong Cencosud</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pedidos-block">
+                    <div class="pedidos-eyebrow">Venta al por mayor</div>
+                    <h3 class="pedidos-subtitle">¿Tienes una bodega o tienda? Solicita tu pedido</h3>
+                    <p class="pedidos-note">Completa el formulario y nuestro equipo comercial te contactará para
+                        coordinar tu primer pedido.</p>
+
+                    <form class="order-form" id="orderForm" novalidate>
+                        <div class="form-row">
+                            <label for="ofNombre">Nombre del negocio</label>
+                            <input type="text" id="ofNombre" name="negocio" required
+                                placeholder="Ej. Bodega Don Pepe">
+                        </div>
+                        <div class="form-row">
+                            <label for="ofContacto">Persona de contacto</label>
+                            <input type="text" id="ofContacto" name="contacto" required
+                                placeholder="Nombre y apellido">
+                        </div>
+                        <div class="form-row two-col">
+                            <div>
+                                <label for="ofTelefono">Teléfono / WhatsApp</label>
+                                <input type="tel" id="ofTelefono" name="telefono" required placeholder="9xx xxx xxx">
+                            </div>
+                            <div>
+                                <label for="ofEmail">Correo electrónico</label>
+                                <input type="email" id="ofEmail" name="email" required
+                                    placeholder="correo@negocio.com">
+                            </div>
+                        </div>
+                        <div class="form-row two-col">
+                            <div>
+                                <label for="ofProducto">Producto</label>
+                                <select id="ofProducto" name="producto">
+                                    <option value="Camu Camu">Camu Camu</option>
+                                    <option value="Aguaymanto">Aguaymanto</option>
+                                    <option value="Surtido">Surtido / no estoy seguro</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="ofCantidad">Cantidad aproximada</label>
+                                <input type="number" id="ofCantidad" name="cantidad" min="1"
+                                    placeholder="Ej. 24 unidades">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label for="ofMensaje">Mensaje (opcional)</label>
+                            <textarea id="ofMensaje" name="mensaje" rows="3"
+                                placeholder="Cuéntanos algo más sobre tu pedido"></textarea>
+                        </div>
+                        <button type="submit" class="btn order-submit">Enviar solicitud</button>
+                    </form>
+
+                    <div class="order-alert" id="orderAlert" role="status" aria-live="polite" hidden>
+                        <svg class="order-alert-icon" viewBox="0 0 24 24" width="22" height="22"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="12" fill="#1f7a5f" />
+                            <path d="M7 12.5l3 3 7-7" fill="none" stroke="#ffffff" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span>¡Pedido recibido correctamente! Nos pondremos en contacto contigo pronto.</span>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; <span id="year"></span> Nativa. Todos los derechos reservados.</p>
+        <p>&copy; <span id="year"></span> Bebidas Naturales Nativa SAC. Todos los derechos reservados.</p>
     </footer>
 
     <script>
@@ -350,15 +930,87 @@
 
                 if (window.innerWidth <= 768) {
                     navLinks.classList.remove('open');
+                    menuToggle.setAttribute('aria-expanded', 'false');
                 }
             });
         });
 
         menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
+            const isOpen = navLinks.classList.toggle('open');
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
         });
 
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Formulario de pedidos: valida los campos y, solo si todo está completo
+        // correctamente, muestra la alerta de confirmación.
+        // Reemplaza el bloque marcado abajo por tu integración real (envío a
+        // tu correo, CRM, WhatsApp Business API, backend propio, etc.).
+        (function () {
+            const form = document.getElementById('orderForm');
+            const alertBox = document.getElementById('orderAlert');
+            if (!form || !alertBox) return;
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alertBox.hidden = true;
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // --- Aquí iría la integración real con tu backend/CRM/WhatsApp ---
+
+                alertBox.hidden = false;
+                form.reset();
+                alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+
+            // Si el usuario vuelve a escribir después de ver la confirmación,
+            // ocultamos la alerta hasta el próximo envío exitoso.
+            form.addEventListener('input', () => {
+                if (!alertBox.hidden) alertBox.hidden = true;
+            });
+        })();
+
+        // Flip card: click/tap en la tarjeta (role="button") alterna la clase is-flipped.
+        // El :hover del CSS solo actúa como mejora extra en dispositivos con mouse.
+        (function () {
+            const cardInners = document.querySelectorAll('.product-card-inner');
+
+            function toggleFlip(inner) {
+                const card = inner.closest('.product-card');
+                const willFlip = !card.classList.contains('is-flipped');
+                card.classList.toggle('is-flipped', willFlip);
+                inner.setAttribute('aria-pressed', String(willFlip));
+            }
+
+            cardInners.forEach(inner => {
+                inner.addEventListener('click', (e) => {
+                    if (e.target.closest('a')) return;
+                    toggleFlip(inner);
+                    e.stopPropagation();
+                });
+
+                inner.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleFlip(inner);
+                    }
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.product-card')) {
+                    document.querySelectorAll('.product-card.is-flipped').forEach(card => {
+                        card.classList.remove('is-flipped');
+                        const inner = card.querySelector('.product-card-inner');
+                        if (inner) inner.setAttribute('aria-pressed', 'false');
+                    });
+                }
+            });
+        })();
     </script>
 </body>
 
