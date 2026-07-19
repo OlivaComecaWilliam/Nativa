@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,9 +35,9 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem 2rem;
-            background: rgba(255,255,255,0.96);
+            background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             z-index: 50;
         }
 
@@ -117,7 +118,7 @@
         .product-card {
             background: white;
             border-radius: 22px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             padding: 1.6rem;
         }
 
@@ -191,8 +192,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -216,7 +224,7 @@
                 background: white;
                 padding: 0.8rem;
                 border-radius: 16px;
-                box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
                 display: none;
                 min-width: 160px;
             }
@@ -245,6 +253,7 @@
         }
     </style>
 </head>
+
 <body>
     <header class="topbar">
         <div class="brand">
@@ -264,17 +273,20 @@
             <div class="hero-card">
                 <div>
                     <h1>Descubre un producto pensado para destacar.</h1>
-                    <p>Nativa presenta una propuesta moderna, funcional y con estilo, ideal para quienes buscan calidad y diseño en un solo lugar.</p>
+                    <p>Nativa presenta una propuesta moderna, funcional y con estilo, ideal para quienes buscan calidad
+                        y diseño en un solo lugar.</p>
                     <a href="#" class="btn" data-view-trigger="productos">Ver productos</a>
                 </div>
-                <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80" alt="Producto Nativa" />
+                <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"
+                    alt="Producto Nativa" />
             </div>
         </section>
 
         <section class="view" id="view-nosotros">
             <div class="info-card">
                 <h2>Nosotros</h2>
-                <p>Somos una marca que combina innovación, sostenibilidad y diseño para crear experiencias auténticas y memorables.</p>
+                <p>Somos una marca que combina innovación, sostenibilidad y diseño para crear experiencias auténticas y
+                    memorables.</p>
                 <div class="grid about-grid" style="margin-top: 1rem;">
                     <div class="info-card">
                         <h3>Visión</h3>
@@ -291,7 +303,8 @@
         <section class="view" id="view-productos">
             <div class="info-card">
                 <h2>Productos</h2>
-                <p>Aquí podrás presentar tus productos cuando compartas los detalles. Por ahora, esta vista está lista para recibir la información final.</p>
+                <p>Aquí podrás presentar tus productos cuando compartas los detalles. Por ahora, esta vista está lista
+                    para recibir la información final.</p>
                 <div class="grid product-grid" style="margin-top: 1rem;">
                     <article class="product-card">
                         <h3>Producto 1</h3>
@@ -348,4 +361,5 @@
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 </body>
+
 </html>
